@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: #ffffff;
+        --foreground: #171717;
+        --primary: #086b7b;
+        --font-main: [ '"Open Sans"', 'Poppins', 'Roboto', 'sans-serif'];
+    }
+}
+
+/* @media (prefers-color-scheme: dark) {
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ba0505;
+        --primary: #086b7b;
+        --font-main: [ '"Open Sans"', 'Poppins', 'Roboto', 'sans-serif'];
+    }
+} */
+
+body {
+    color: var(--foreground);
+    background: var(--background);
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+}
