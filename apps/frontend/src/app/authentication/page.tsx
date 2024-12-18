@@ -7,9 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import ErrorMsg from './../../components/templates/ErrorMsg';
 import { redirect, useRouter } from 'next/navigation';
-import { getSession, signIn, useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import useAuthAPI from '@/data/hook/useAuthAPI';
-import { getCookie, setCookie } from 'cookies-next';
 
 const loginSchema = z.object({
     email: z.string().email({ message: 'Email inválido!' }),
@@ -37,8 +36,8 @@ export default function Authentication() {
     });
 
     useEffect(() => {
-        const cookieUser = getCookie('drteeth-user');
-        if (cookieUser) {
+        console.log('Valor da session=', session);
+        if (session?.data?.user) {
             redirect('/');
         }
     });

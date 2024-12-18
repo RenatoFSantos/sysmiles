@@ -13,7 +13,7 @@
     "@tailwindcss/forms": "^0.5.9",
     "@types/react-input-mask": "^3.0.6",
     "@types/react-modal": "^3.16.3",
-    "cookies-next": "^4.3.0",
+    "core": "*",
     "dayjs": "^1.11.13",
     "eslint-config-prettier": "^9.1.0",
     "firebase": "^10.14.0",
@@ -27,8 +27,7 @@
     "react-input-mask": "^2.0.4",
     "react-modal": "^3.16.1",
     "sonner": "^1.5.0",
-    "zod": "^3.23.8",
-    "core": "*"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
