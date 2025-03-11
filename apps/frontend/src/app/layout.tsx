@@ -2,6 +2,10 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Open_Sans } from 'next/font/google';
 import NextAuthSessionProvider from '@/providers/sessionProvider';
+import Layout from '@/components/templates/Layout';
+import { getServerAuthSession } from '@/backend/authentication/auth';
+import { redirect } from 'next/navigation';
+import { UserLoginType } from '@/types/userLoginType';
 import { AuthAPIProvider } from '@/data/context/AuthContextAPI';
 
 const mainFontFamily = Open_Sans({

@@ -14,12 +14,12 @@ import { getStorage } from 'firebase/storage';
 // };
 
 const firebaseConfig = {
-    apiKey: 'AIzaSyCxQ6p2zL6uk7RyEj4x50CL9t47201h0-o',
-    authDomain: 'drteeth-e0dfc.firebaseapp.com',
-    projectId: 'drteeth-e0dfc',
-    storageBucket: 'drteeth-e0dfc.appspot.com',
-    messagingSenderId: '612753345132',
-    appId: '1:612753345132:web:b39ae86a1d5861e446e649',
+    apiKey: 'AIzaSyCmlWAxUmmmdJMxnOqRpkafKi0ExGaTWHw',
+    authDomain: 'sysmiles-v1.firebaseapp.com',
+    projectId: 'sysmiles-v1',
+    storageBucket: 'sysmiles-v1.firebasestorage.app',
+    messagingSenderId: '483675978485',
+    appId: '1:483675978485:web:186846cc82b0084bafe3bc',
 };
 
 console.log('Inicializando Firebase');

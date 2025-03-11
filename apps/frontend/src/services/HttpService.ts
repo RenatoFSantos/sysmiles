@@ -1,41 +1,41 @@
 import { iResultHttp } from '@/interface/iResultHttp';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+// import { cookies } from 'next/headers';
 
 export default class HttpService {
     private createHeader() {
-        // const cookiesStore = cookies();
         let header: {};
-        // if (cookiesStore.has('drteeth-user')) {
-        //     const cookieUser = cookiesStore.get('drteeth-user').toString();
-        //     const token = this.getToken(cookieUser);
-        header = {
-            'Content-Type': 'application/json',
-            // 'x-token-access': `Bearer ${token}`,
-        };
-        // }
+        // const cookiesStore = await cookies();
+        // const token = cookiesStore.get('drteeth-token').value;
+        const token = Cookies.get('drteeth-token')?.toString();
+        if (token) {
+            header = {
+                'Content-Type': 'application/json',
+                'x-token-access': `Bearer ${token}`,
+            };
+        }
         return header;
     }
 
-    // private getToken(cookieUser: string) {
-    //     let cookies = cookieUser.split(';');
-
-    //     cookies.forEach((element) => {
-    //         const [cookieName, cookieValue] = element.split('=');
-    //         if (cookieName === 'token') {
-    //             return cookieValue;
-    //         }
-    //     });
-    //     return null;
-    // }
-
-    public get(url: string): Promise<iResultHttp> {
+    public get(url: string, url_search?: URLSearchParams): Promise<iResultHttp> {
         const header = this.createHeader();
+        let params = new URLSearchParams();
+        if (url_search.has) {
+            for (const [key, value] of url_search.entries()) {
+                params.append(key, value);
+            }
+        }
         return new Promise(async (resolve) => {
+            console.log('Valores do Params=', params);
+            console.log('Valores da url=', url);
             try {
-                const res = await fetch(url, {
+                const res = await axios(url, {
                     method: 'GET',
                     headers: header,
+                    params,
                 });
-                resolve({ success: true, data: res.json(), error: null });
+                resolve({ success: true, data: res.data, error: null });
             } catch (error) {
                 resolve({ success: false, data: null, error });
             }
@@ -47,12 +47,12 @@ export default class HttpService {
         const header = this.createHeader();
         return new Promise(async (resolve) => {
             try {
-                const res = await fetch(url, {
+                const res = await axios(url, {
                     method: 'POST',
                     headers: header,
-                    body: myBody,
+                    data: myBody,
                 });
-                resolve({ success: true, data: res.json(), error: null });
+                resolve({ success: true, data: res.data, error: null });
             } catch (error) {
                 resolve({ success: false, data: null, error });
             }
@@ -63,11 +63,11 @@ export default class HttpService {
         const header = this.createHeader();
         return new Promise(async (resolve) => {
             try {
-                const res = await fetch(url, {
+                const res = await axios(url, {
                     method: 'DELETE',
                     headers: header,
                 });
-                resolve({ success: true, data: res.json(), error: null });
+                resolve({ success: true, data: res.data, error: null });
             } catch (error) {
                 resolve({ success: false, data: null, error });
             }

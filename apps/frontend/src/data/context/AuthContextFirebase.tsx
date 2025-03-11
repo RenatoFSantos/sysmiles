@@ -29,24 +29,24 @@ const AuthContextFirebase = createContext<AuthContextFirebaseProps>({});
 async function userNormalized(userFirebase: User): Promise<UserAuthModel> {
     const token = await userFirebase.getIdToken();
     return {
-        uid: userFirebase.uid,
+        id: userFirebase.uid,
         name: userFirebase.displayName ?? '',
         email: userFirebase.email ?? '',
         token,
         provider: userFirebase.providerData[0]?.providerId ?? '',
-        imageUrl: userFirebase.photoURL ?? '',
+        image: userFirebase.photoURL ?? '',
     };
 }
 
-function gerenciarCookie(logado: boolean) {
-    if (logado) {
-        Cookies.set('drteeth-auth', logado.toString(), {
-            expires: 7,
-        });
-    } else {
-        Cookies.remove('drteeth-auth');
-    }
-}
+// function gerenciarCookie(logado: boolean) {
+//     if (logado) {
+//         Cookies.set('drteeth-auth', logado.toString(), {
+//             expires: 7,
+//         });
+//     } else {
+//         Cookies.remove('drteeth-auth');
+//     }
+// }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -57,12 +57,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (userFirebase?.email) {
             const user = await userNormalized(userFirebase);
             setUser(user);
-            gerenciarCookie(true);
+            // gerenciarCookie(true);
             setLoading(false);
             return user.email;
         } else {
             setUser(undefined);
-            gerenciarCookie(false);
+            // gerenciarCookie(false);
             setLoading(false);
             return false;
         }
@@ -112,9 +112,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const result = await signInWithPopup(auth, provider);
                 const credential = await GoogleAuthProvider.credentialFromResult(result);
                 const token = credential?.accessToken;
-                console.log('Result = ', result);
-                console.log('Credential = ', credential);
-                console.log('token = ', token);
                 await configureSession(result.user);
                 resolve({ success: true, data: result.user, error: null });
             } catch (error: any) {

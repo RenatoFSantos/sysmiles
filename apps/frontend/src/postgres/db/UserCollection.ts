@@ -11,7 +11,6 @@ export default class UserCollection extends BaseService<User> {
     }
 
     public save(user: User): Promise<User> {
-        console.log('User que chegou=', user);
         return new Promise(async (resolve) => {
             try {
                 const result = await this.http.post(this.urlBase, user);
@@ -26,7 +25,6 @@ export default class UserCollection extends BaseService<User> {
     }
 
     public upload(avatar: any): Promise<string> {
-        console.log('Chegamos no upload do arquivo=', avatar);
         return new Promise(async (resolve) => {
             try {
                 const result = await this.http.post(this.urlBase, avatar);
@@ -38,48 +36,4 @@ export default class UserCollection extends BaseService<User> {
             }
         });
     }
-
-    // async all(): Promise<iResultHttp> {
-    //     let listUsers: Array<User> = [];
-    //     const url = process.env.NEXT_PUBLIC_URL + 'users';
-    //     try {
-    //         const res = await this.getAll();
-    //         if(res.success) {
-    //             return res.data;
-    //         }
-    //         result = await fetch(url, {
-    //             method: 'get',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //         });
-    //         if (users) {
-    //             listUsers = await users.json();
-    //         }
-    //     } catch (error) {
-    //         throw new Error('Erro: ', error);
-    //     }
-    //     console.log('Retorno =', listUsers);
-    //     return listUsers;
-    // }
-
-    // async all(): Promise<Array<User>> {
-    //     let listUsers: Array<User> = [];
-    //     const url = process.env.NEXT_PUBLIC_URL + 'users';
-    //     try {
-    //         const users = await fetch(url, {
-    //             method: 'get',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //         });
-    //         if (users) {
-    //             listUsers = await users.json();
-    //         }
-    //     } catch (error) {
-    //         throw new Error('Erro: ', error);
-    //     }
-    //     console.log('Retorno =', listUsers);
-    //     return listUsers;
-    // }
 }

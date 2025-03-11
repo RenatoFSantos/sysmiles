@@ -1,7 +1,7 @@
 'use client';
 
 import User from '@/model/User';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,19 +13,19 @@ import { storage } from '@/firebase/config';
 import { iconTrash } from '../icons';
 import Botao from './Botao';
 import InputMask from 'react-input-mask';
+import CrudHeader from './CrudHeader';
 
-// import dayjs from 'dayjs';
-// import isLeapYear from 'dayjs/plugin/isLeapYear';
-// import utc from 'dayjs/plugin/utc';
-// import 'dayjs/locale/pt-br';
-
-// dayjs.extend(isLeapYear);
-// dayjs.extend(utc);
-// dayjs.locale('pt-br');
+// formato internacional (coloquei apenas para testar se as configurações e a biblioteca funciona para configurar. Não estou usando dentro deste arquivo.)
+// New Internacional Number Formater - NINF
+const formatter = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+});
+// Para utilizar o formato codifique desta maneira:
+// formatter.format(<valor>)
 
 interface FormUserDetailProps {
     user: User;
-    title?: string;
     btnCancel: () => void;
     btnSave: (user: User) => void;
 }
@@ -33,6 +33,7 @@ interface FormUserDetailProps {
 export const USERTYPE = {
     ADMINISTRADOR: 'A',
     GESTOR: 'G',
+    DENTISTA: 'D',
     VISITANTE: 'V',
 } as const;
 
@@ -72,8 +73,8 @@ const FormDataSchema = z
 type createFormData = z.infer<typeof FormDataSchema>;
 
 export default function FormUserDetail(props: FormUserDetailProps) {
+    const title = props.user?.uid ? 'Alterar Usuário' : 'Inserir Usuário';
     const [imageURL, setImageURL] = useState(null);
-    const hiddenFileInputRef = useRef<HTMLInputElement | null>(null);
     const [preview, setPreview] = useState<string | null>('/photo_default.jpg');
     const [progress, setProgress] = useState(0);
 
@@ -140,9 +141,7 @@ export default function FormUserDetail(props: FormUserDetailProps) {
             userTxAvatar: data?.userTxAvatar || null,
         };
 
-        // console.log('transformado=', objUser);
         const transform = JSON.stringify(objUser, replacer);
-        console.log('transformado 2=', transform);
         return transform;
     }
 
@@ -154,7 +153,6 @@ export default function FormUserDetail(props: FormUserDetailProps) {
             setImageURL(null);
         }
 
-        console.log('Entrei no handleFileChange', event.target.files[0]);
         const file = event.target.files?.[0];
 
         if (file) {
@@ -172,7 +170,6 @@ export default function FormUserDetail(props: FormUserDetailProps) {
                 },
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                        console.log('Valor da URL=', url);
                         setPreview(url);
                         setValue('userTxAvatar', url);
                         setProgress(0);
@@ -199,21 +196,17 @@ export default function FormUserDetail(props: FormUserDetailProps) {
     }
 
     const submitting = (data: any) => {
-        console.log('formData=', data);
         const model = transformData(data);
-        console.log('model gerado=', model);
         Save(model);
     };
 
     return (
         <>
-            <div className="pb-2">
-                <h1>{props.title}</h1>
-            </div>
-            <form className="bg-gray-200 px-2 py-2 h-full" onSubmit={handleSubmit(submitting)}>
+            <CrudHeader title={title} />
+            <form className="bg-gray-200 mb-5 p-5 h-full" onSubmit={handleSubmit(submitting)}>
                 <div className="grid grid-cols-12 gap-2 w-full bg-gray-200">
                     <div className="col-span-2 mt-3">
-                        <div className="flex justify-center align-middle flex-wrap">
+                        <div className="flex flex-col items-center align-middle flex-wrap">
                             <div className="relative w-[150px] h-[150px]">
                                 {progress == 0 ? (
                                     <>
@@ -268,7 +261,7 @@ export default function FormUserDetail(props: FormUserDetailProps) {
                         {/* Linha 1 ************************************************************ */}
                         <div className="flex flex-col mb-2">
                             <div className="flex flex-row flex-1 w-full flex-wrap">
-                                <div className="w-1/5">
+                                <div className="w-1/2">
                                     <div className="flex flex-col">
                                         <label
                                             htmlFor="id"
@@ -364,6 +357,7 @@ export default function FormUserDetail(props: FormUserDetailProps) {
                                             {...register('userCdType')}>
                                             <option value="A">Administrador</option>
                                             <option value="G">Gestor</option>
+                                            <option value="D">Dentista</option>
                                             <option value="V">Visitante</option>
                                         </select>
                                         {errors.userCdType && (
@@ -471,7 +465,7 @@ export default function FormUserDetail(props: FormUserDetailProps) {
                         {/* {data.uid} */}
                         <div className="flex flex-col mb-2">
                             <div className="flex flex-row flex-1 w-full gap-1">
-                                <div className="w-1/5">
+                                <div className="w-1/2">
                                     <div className="flex flex-col">
                                         <label
                                             htmlFor="password"
@@ -491,7 +485,7 @@ export default function FormUserDetail(props: FormUserDetailProps) {
                                         )}
                                     </div>
                                 </div>
-                                <div className="w-1/5">
+                                <div className="w-1/2">
                                     <div className="flex flex-col">
                                         <label
                                             htmlFor="confirm"
@@ -511,7 +505,6 @@ export default function FormUserDetail(props: FormUserDetailProps) {
                                         )}
                                     </div>
                                 </div>
-                                <div className="w-3/5"></div>
                             </div>
                         </div>
                         {/* Botões ************************************************************ */}

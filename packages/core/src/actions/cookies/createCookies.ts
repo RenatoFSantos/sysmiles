@@ -1,9 +1,7 @@
 "use server";
-
-import { JWT } from "next-auth/jwt";
 import { cookies } from "next/headers";
 
-export default async function createCookies(name: string, session: JWT) {
+export default async function createCookies(name: string, session: any) {
   if (session) {
     await cookies().set(
       `${name}`,

@@ -2,7 +2,6 @@ import { getServerSession, type DefaultSession, type NextAuthOptions } from 'nex
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { JWT } from 'next-auth/jwt';
-import createCookies from 'core/src/actions/cookies/createCookies';
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -59,7 +58,6 @@ export const authOptions: NextAuthOptions = {
                             provider: json.user.userCdType,
                             token: json.token,
                         };
-                        console.log('AUTHORIZE -> userLogin=');
                         return userLogin;
                     } else {
                         const errorData = await response.json();
@@ -144,7 +142,6 @@ export const authOptions: NextAuthOptions = {
         async session({ session, user, token }) {
             // console.log('Session -> session', session);
             // console.log('Session -> token', token);
-            createCookies('drteeth-user', token);
             return (session = {
                 ...session,
                 user: {

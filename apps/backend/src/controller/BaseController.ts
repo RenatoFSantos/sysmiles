@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from '../data-source';
-import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { BaseNotification } from '../entity/BaseNotification';
 
 export abstract class BaseController<T> extends BaseNotification {
@@ -17,24 +17,104 @@ export abstract class BaseController<T> extends BaseNotification {
         this._onlyRootController = onlyRoot;
     }
 
+    async allActives(): Promise<number> {
+        const findOptions: FindManyOptions = {
+            where: {
+                deleted: false,
+            },
+        };
+        const all = await this._repository.find(findOptions);
+        console.log('Valor do all=', all.length);
+        return all.length;
+    }
+
+    async allPagination(request: Request, response: Response, next: NextFunction) {
+        const params = request.query;
+        const keys = Object.keys(params);
+        const values = Object.values(params);
+        // Sort
+        const sort = params.sort;
+        console.log('Valor do sort=', sort);
+        // Path
+        const path = params.path;
+        // Number of records per page
+        const limit: number = params.limit || 10;
+        // Page number
+        const page = params.page || 1;
+        console.log('Valor do page=', page);
+        // Previous records number
+        const numRec = page === 1 ? 1 : page * limit - limit;
+        console.log('Valor do numRec=', numRec);
+        // Number of records
+        const totalRec = await this.allActives();
+        console.log('Valor do allActives=', totalRec);
+        // Fields Search Name
+        const fieldSearch = params.field_search;
+        console.log('Valor do fieldSearch=', fieldSearch);
+        // const totalRec = await this._repository.count();
+        // Last page
+        const lastPage = Math.ceil(+totalRec / limit);
+        console.log('Valor do lastPage=', lastPage);
+        let result: T[];
+        let search = '';
+        console.log('Valor do params=', params);
+        if (params?.search !== 'null') {
+            console.log('Entrei no search', params?.search);
+            search = `%${params?.search}%`;
+            result = await this.repository
+                .createQueryBuilder('table')
+                .where('table.deleted = false')
+                .andWhere(`table.${fieldSearch} ILIKE :search`, { search })
+                .orderBy(`table.${sort}`)
+                .getMany();
+        } else {
+            console.log('Entrei no geral');
+            result = await this.repository
+                .createQueryBuilder('table')
+                .where('table.deleted = false')
+                .orderBy(`table.${sort}`)
+                .take(limit)
+                .skip(numRec)
+                .getMany();
+        }
+        // console.log('Valor do RESULT=', result);
+        return response.json({
+            result,
+            pagination: {
+                // Path
+                path: path,
+                // Current Page
+                page: +page,
+                // Total per page
+                recpage: +limit,
+                // Previous page
+                prev_page_url: +page - 1 >= 1 ? page - 1 : false,
+                // Next page
+                next_page_url: +page + 1 > lastPage ? false : +page + 1,
+                // Last Page
+                lastPage,
+                // Number of records
+                total: search !== '' ? result.length : totalRec,
+            },
+        });
+    }
+
     private checkNoPermission(request: Request) {
         const validation = this._onlyRootController && request.params.userCdType !== 'A';
-        // console.log('CheckNoPermission=', validation);
         return validation;
     }
 
     async all(request: Request, response: Response, next: NextFunction) {
         if (this.checkNoPermission(request)) return this._errorRoot;
-        const findAllRegister: FindOptionsWhere<T> = {
+        const findOptions: FindManyOptions = {
             where: {
                 deleted: false,
             },
-        } as unknown as FindOptionsWhere<T>;
-        return await this._repository.find(findAllRegister);
+        };
+        return await this._repository.find(findOptions);
     }
 
     async one(request: Request, response: Response, next: NextFunction) {
-        console.log('pesquisando o usuário', request.param.id);
         // if (this.checkNoPermission(request)) return this._errorRoot;
         const uid = request.params.id as string;
         const findOneRegister: FindOneOptions<T> = {

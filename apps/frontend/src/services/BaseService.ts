@@ -23,8 +23,8 @@ export default abstract class BaseService<T> {
         return header;
     }
 
-    public getAll(): Promise<iResultHttp> {
-        return this.http.get(this.urlBase);
+    public getAll(search?: URLSearchParams): Promise<iResultHttp> {
+        return this.http.get(this.urlBase, search);
     }
 
     public getById(id: string): Promise<iResultHttp> {

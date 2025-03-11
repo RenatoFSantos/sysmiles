@@ -6,9 +6,10 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import ErrorMsg from './../../components/templates/ErrorMsg';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import useAuthAPI from '@/data/hook/useAuthAPI';
+import createCookies from 'core/src/actions/cookies/createCookies';
 
 const loginSchema = z.object({
     email: z.string().email({ message: 'Email inválido!' }),
@@ -36,15 +37,17 @@ export default function Authentication() {
     });
 
     useEffect(() => {
-        console.log('Valor da session=', session);
         if (session?.data?.user) {
-            redirect('/');
+            createCookies('drteeth-user', session?.data?.user).then(() => {
+                setLoading(false);
+                router.push('/');
+            });
         }
     });
 
     const onSubmit = async (formData: any) => {
         setLoading(true);
-        console.log('FormData=', formData);
+
         const fieldEmail = formData.email;
         const fieldPassword = formData.password;
 
@@ -59,9 +62,8 @@ export default function Authentication() {
                     redirect: false,
                     callbackUrl: '/',
                 });
-                console.log('Valor do result', result);
+
                 if (!result.ok) {
-                    console.log('Deu erro no signin');
                     await exibirError('Usuário/Senha inválidos!');
                 } else {
                     router.push('/');
@@ -71,14 +73,12 @@ export default function Authentication() {
             }
         } else {
             try {
-                console.log('Entrei no else', fieldEmail, fieldPassword);
                 const result = await registerAPI(fieldEmail, fieldPassword);
                 if (result.success) {
                     await exibirInfo('Cadastrado com sucesso!');
                     await setMode('login');
-                    console.log('Result data=', result.data);
                 } else {
-                    console.log('Result com erro=', result.error);
+                    await exibirError(result.error);
                 }
             } catch (error) {
                 await exibirError(error);
@@ -87,24 +87,10 @@ export default function Authentication() {
     };
 
     const handleLoginGoogle = async () => {
-        console.log('Logando com o Google');
         try {
             const result = await signIn('google', {
                 redirect: false,
-                callbackUrl: '/',
             });
-            // console.log('Valor do result=', result);
-            // const session = useSession();
-            // console.log('Valor da session do google=', session);
-            // if (!result.ok) {
-            //     console.log('Google result=', result);
-            //     await exibirError(result.error);
-            // } else {
-            //     const session = await getSession();
-            //     console.log('Entrei com o Google', session);
-            //     await setCookie('drteeth-user', JSON.stringify(session?.user));
-            //     router.push('/');
-            // }
         } catch (error) {
             exibirError(error);
         }

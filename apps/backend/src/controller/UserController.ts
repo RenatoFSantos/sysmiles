@@ -1,15 +1,74 @@
-import { FindOneOptions } from 'typeorm';
+import { FindManyOptions, FindOneOptions } from 'typeorm';
 import { User } from '../entity/User';
 import { BaseController } from './BaseController';
-import { Request } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as md5 from 'md5';
 import { sign } from 'jsonwebtoken';
 import 'dotenv/config';
-import * as multer from 'multer';
 
 export class UserController extends BaseController<User> {
     constructor() {
         super(User, false);
+    }
+
+    async allUsers(request: Request, response: Response, next: NextFunction) {
+        const params = request.query;
+        const keys = Object.keys(params);
+        const values = Object.values(params);
+        // Sort
+        const sort = params.sort || 'user_nm_name';
+        // Path
+        const path = params.path;
+        // Number of records per page
+        const limit: number = params.limit || 10;
+        // Page number
+        const page = params.page || 1;
+        // Previous records number
+        const numRec = page === 1 ? 1 : page * limit - limit;
+        // Number of records
+        const totalRec = await this.allActives();
+        // const totalRec = await this._repository.count();
+        // Last page
+        const lastPage = Math.ceil(+totalRec / limit);
+
+        let result: User[];
+        let search = '';
+        if (params?.user_nm_name) {
+            search = `%${params?.user_nm_name}%`;
+            result = await this.repository
+                .createQueryBuilder('table')
+                .where('table.deleted = false')
+                .andWhere(`table.user_nm_name ILIKE :search`, { search })
+                .orderBy(`table.${sort}`)
+                .getMany();
+        } else {
+            result = await this.repository
+                .createQueryBuilder('table')
+                .where('table.deleted = false')
+                .orderBy(`table.${sort}`)
+                .take(limit)
+                .skip(numRec)
+                .getMany();
+        }
+        return response.json({
+            result,
+            pagination: {
+                // Path
+                path: path,
+                // Current Page
+                page: +page,
+                // Total per page
+                recpage: +limit,
+                // Previous page
+                prev_page_url: +page - 1 >= 1 ? page - 1 : false,
+                // Next page
+                next_page_url: +page + 1 > lastPage ? false : +page + 1,
+                // Last Page
+                lastPage,
+                // Number of records
+                total: keys.length > 3 ? result.length : totalRec,
+            },
+        });
     }
 
     async email(request: Request) {
@@ -36,6 +95,13 @@ export class UserController extends BaseController<User> {
             };
         } else {
             return { status: 404, message: 'Email inexistente!' };
+        }
+    }
+
+    async filterName(request: Request) {
+        let filter = request.params.search;
+        if (!filter) {
+        } else {
         }
     }
 

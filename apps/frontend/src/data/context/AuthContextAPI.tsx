@@ -34,23 +34,23 @@ export function AuthAPIProvider({ children }: { children: React.ReactNode }) {
         };
     }
 
-    function gerenciarCookieAPI(logado: boolean, user?: UserAuthModel, token?: string) {
-        if (logado) {
-            Cookies.set('drteeth-auth', logado.toString(), {
-                expires: 7,
-            });
-            Cookies.set('drteeth-user', JSON.stringify(user), {
-                expires: 7,
-            });
-            Cookies.set('drteeth-token', token, {
-                expires: 7,
-            });
-        } else {
-            Cookies.remove('drteeth-auth');
-            Cookies.remove('drteeth-user');
-            Cookies.remove('drteeth-token');
-        }
-    }
+    // function gerenciarCookieAPI(logado: boolean, user?: UserAuthModel, token?: string) {
+    //     if (logado) {
+    //         Cookies.set('drteeth-auth', logado.toString(), {
+    //             expires: 7,
+    //         });
+    //         Cookies.set('drteeth-user', JSON.stringify(user), {
+    //             expires: 7,
+    //         });
+    //         Cookies.set('drteeth-token', token, {
+    //             expires: 7,
+    //         });
+    //     } else {
+    //         Cookies.remove('drteeth-auth');
+    //         Cookies.remove('drteeth-user');
+    //         Cookies.remove('drteeth-token');
+    //     }
+    // }
 
     async function configureSessionAPI(userAPI: UserAPI, token: any) {
         if (userAPI?.userDsEmail) {

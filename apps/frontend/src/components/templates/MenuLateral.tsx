@@ -1,7 +1,9 @@
 'use client';
 import MenuItem from './MenuItem';
-import { iconBell, iconExit, iconHome, iconSettings } from '../icons';
-import { useEffect, useState } from 'react';
+import { iconExit, iconHome, iconSettings } from '../icons';
+import { FaRegUser } from 'react-icons/fa';
+import { ChartBarStacked } from 'lucide-react';
+import { useState } from 'react';
 import useModalLogout from '@/data/hook/useModalLogout';
 
 export default function MenuLateral() {
@@ -18,17 +20,41 @@ export default function MenuLateral() {
             <aside
                 className={`flex flex-col h-full min-w-[40px] max-w-[200px] bg-drteeth-primary text-white`}>
                 <ul className={`flex-grow`}>
-                    <MenuItem url="/" texto={showMenu ? 'Início' : ''} icone={iconHome} />
+                    <MenuItem url="/dashboard" texto={showMenu ? 'Início' : ''} icone={iconHome} />
                     <MenuItem
-                        url="/clinic"
-                        texto={showMenu ? 'Clínica' : ''}
+                        url="/dashboard/clinic"
+                        texto={showMenu ? 'Clínicas' : ''}
                         icone={iconSettings}
                     />
-                    <MenuItem url="/profile" texto={showMenu ? 'Perfil' : ''} icone={iconBell} />
+                    <MenuItem
+                        url="/dashboard/user"
+                        texto={showMenu ? 'Usuários' : ''}
+                        icone={<FaRegUser />}
+                    />
+                    <MenuItem
+                        url="/dashboard/dentist"
+                        texto={showMenu ? 'Dentista' : ''}
+                        icone={<FaRegUser />}
+                    />
+                    <MenuItem
+                        url="/dashboard/category"
+                        texto={showMenu ? 'Categoria' : ''}
+                        icone={<ChartBarStacked />}
+                    />
+                    <MenuItem
+                        url="/dashboard/payments"
+                        texto={showMenu ? 'Payments' : ''}
+                        icone={<ChartBarStacked />}
+                    />
+                    <MenuItem
+                        url="/dashboard"
+                        texto={showMenu ? 'Crud' : ''}
+                        icone={<ChartBarStacked />}
+                    />
                 </ul>
                 <ul>
                     <MenuItem
-                        url="/"
+                        url="/dashboard"
                         texto={showMenu ? 'Saída' : ''}
                         icone={iconExit}
                         onClick={() => setShow(true)}

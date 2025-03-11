@@ -17,11 +17,14 @@ function ModalLogout(props: ModalLogoutProps) {
     }
 
     async function exitApp() {
+        await Cookies.remove('next-auth.session-token');
+        await Cookies.remove('drteeth-user');
+        await Cookies.remove('drteeth-token');
         await signOut({
             callbackUrl: '/',
         });
-        await Cookies.remove('next-auth.session-token');
-        await Cookies.remove('drteeth-user');
+        // await Cookies.remove('next-auth.callback-url');
+        // await Cookies.remove('next-auth.csrf-token');
     }
 
     return (
